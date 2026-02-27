@@ -1,3 +1,5 @@
+package ui;
+
 import db.Database;
 import javax.swing.*;
 import java.awt.*;
