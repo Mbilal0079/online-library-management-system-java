@@ -1,4 +1,5 @@
 import javax.swing.*;
+import ui.LoginFrame;
 
 /**
  * Main class - Entry point for the Library Management System

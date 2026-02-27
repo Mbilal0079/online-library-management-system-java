@@ -7,7 +7,7 @@ import java.util.ArrayList;
 public class Database {
     private static final String URL = "jdbc:sqlite:library.db";
 
-    // Initialize database and table
+    // Initialize database and tables
     static {
         try (Connection conn = DriverManager.getConnection(URL)) {
             Statement stmt = conn.createStatement();
@@ -16,6 +16,15 @@ public class Database {
                     "title TEXT NOT NULL, " +
                     "author TEXT NOT NULL, " +
                     "available INTEGER NOT NULL)");
+            stmt.execute("CREATE TABLE IF NOT EXISTS users (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "username TEXT NOT NULL UNIQUE, " +
+                    "password TEXT NOT NULL)");
+            PreparedStatement ps = conn.prepareStatement(
+                    "INSERT OR IGNORE INTO users (username, password) VALUES (?, ?)");
+            ps.setString(1, "admin");
+            ps.setString(2, "admin123");
+            ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -73,6 +82,21 @@ public class Database {
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+    }
+
+    // Check login credentials
+    public boolean checkLogin(String username, String password) {
+        try (Connection conn = DriverManager.getConnection(URL)) {
+            PreparedStatement ps = conn.prepareStatement(
+                    "SELECT * FROM users WHERE username = ? AND password = ?");
+            ps.setString(1, username);
+            ps.setString(2, password);
+            ResultSet rs = ps.executeQuery();
+            return rs.next();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
         }
     }
 }
